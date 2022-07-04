@@ -1,0 +1,55 @@
+<!--<?xml version="1.0" encoding="UTF-8" standalone="no"?>-->
+<!--<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"-->
+<!--                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">-->
+
+
+<!--    <changeSet id="1" author="ella">-->
+<!--        <createTable tableName="building">-->
+<!--            <column name="id" type="bigint" autoIncrement="true">-->
+<!--                <constraints primaryKey="true"/>-->
+<!--            </column>-->
+
+<!--            <column name="street" type="varchar(255)">-->
+<!--                <constraints nullable="false"/>-->
+<!--            </column>-->
+
+<!--            <column name="house_number" type="varchar(255)">-->
+<!--                <constraints nullable="false"/>-->
+<!--            </column>-->
+
+<!--            <column name="floors_count" type="number"/>-->
+<!--        </createTable>-->
+
+<!--        <createTable tableName="apartment">-->
+<!--            <column type="bigint" name="id" autoIncrement="true">-->
+<!--                <constraints primaryKey="true"/>-->
+<!--            </column>-->
+
+
+<!--            <column name="building_id" type="bigint">-->
+<!--                <constraints referencedTableName="building"-->
+<!--                             referencedColumnNames="id"-->
+<!--                             foreignKeyName="APARTMENT_BUILDING_ID_BUILDING_ID"/>-->
+<!--            </column>-->
+<!--        </createTable>-->
+
+<!--        <createTable tableName="owner">-->
+<!--            <column type="bigint" name="id" autoIncrement="true">-->
+<!--                <constraints primaryKey="true"/>-->
+<!--            </column>-->
+
+<!--            <column name="name" type="varchar(255)">-->
+<!--                <constraints unique="true" nullable="false"/>-->
+<!--            </column>-->
+
+<!--            <column name="apartment_id" type="bigint">-->
+<!--                <constraints referencedTableName="apartment"-->
+<!--                             referencedColumnNames="id"-->
+<!--                             foreignKeyName="OWNER_APARTMENT_ID_APARTMENT_ID"/>-->
+<!--            </column>-->
+<!--        </createTable>-->
+<!--    </changeSet>-->
+
+
+<!--</databaseChangeLog>-->
