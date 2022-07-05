@@ -12,4 +12,6 @@ public interface PeopleRepository extends JpaRepository<People,Long> {
     People findByEmail(String email);
 
 
+
+
 }

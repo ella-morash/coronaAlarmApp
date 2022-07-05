@@ -1,6 +1,7 @@
 package com.example.coronaalarmapp.service;
 
 
+import com.example.coronaalarmapp.dto.MoveChildrenRequestDTO;
 import com.example.coronaalarmapp.dto.PeopleDTORequest;
 import com.example.coronaalarmapp.util.DateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,4 +16,6 @@ public interface PeopleService {
     void updatePerson(PeopleDTORequest request, Long id);
 
     void addGuardianToPerson(PeopleDTORequest request, Long id);
+
+    void moveChildrenToAnotherGuardian(MoveChildrenRequestDTO request, Long id);
 }

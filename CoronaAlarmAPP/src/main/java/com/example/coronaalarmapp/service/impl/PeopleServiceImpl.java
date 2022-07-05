@@ -1,6 +1,7 @@
 package com.example.coronaalarmapp.service.impl;
 
 
+import com.example.coronaalarmapp.dto.MoveChildrenRequestDTO;
 import com.example.coronaalarmapp.dto.PeopleDTORequest;
 import com.example.coronaalarmapp.entity.People;
 import com.example.coronaalarmapp.repository.PeopleRepository;
@@ -14,11 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.Table;
-import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class PeopleServiceImpl implements PeopleService {
@@ -110,6 +111,31 @@ public class PeopleServiceImpl implements PeopleService {
 
         peopleRepository.save(person);
 
+    }
+
+    @Override
+    public void moveChildrenToAnotherGuardian(MoveChildrenRequestDTO request, Long id) {
+        People fromGuardian = peopleRepository.findById(request.getFromGuardian())
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("No such guardian with id %d",request.getFromGuardian())));
+
+        //verify, all children belong to a specific `fromGuardian`, or else - 422
+        //Error should indicate: which of the children does not belong to a specific from guardian
+
+        List<People> children = peopleRepository.findPeopleByGuardianId(fromGuardian.getId());
+        Set<People> set = new HashSet<>(children);
+        List<Optional<People>> requestChildren = request.getChildrenIds().stream().map(i->peopleRepository.findById(i)).toList();
+
+        requestChildren.stream().filter(ch -> ch.isPresent() && set.add(ch.get())).forEach(ch -> {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    String.format("Person with id %d does not belong to this guardian", ch.get().getId()));
+        });
+
+        //- verify, that `toGuardian` is not a child and does not have a guardian
+
+
+
+        //- on move, childrens’ city and area should be changed to guardians city and area
     }
 }
 
