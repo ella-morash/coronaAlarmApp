@@ -14,7 +14,7 @@ public class PeopleController {
     private PeopleService peopleService;
 
     @SneakyThrows
-    @PostMapping(path = "/api/people ") // NOT FOUND
+    @PostMapping(path = "/api/people") // NOT FOUND
     public void createPerson(@RequestBody PeopleDTORequest peopleDTO){
 
         peopleService.createPerson(peopleDTO);
