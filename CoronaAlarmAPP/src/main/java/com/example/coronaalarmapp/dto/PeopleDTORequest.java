@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -13,16 +12,14 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @Builder
-public class PeopleDTO {
+public class PeopleDTORequest {
     private String firstName;
     private String lastName;
     private String email;
     private String dateOfBirth;
     private String phoneNumber;
     private Long guardianId;
-    private PeopleDTO guardian;
-    private List<PeopleDTO> children;
-    private List<PeopleDTO> guardians;
+    private List<PeopleDTORequest> guardians;
     private Long cityId;
     private Long areaId;
 

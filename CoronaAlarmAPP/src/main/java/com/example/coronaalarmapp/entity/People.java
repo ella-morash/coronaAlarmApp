@@ -1,6 +1,6 @@
 package com.example.coronaalarmapp.entity;
 
-import com.example.coronaalarmapp.dto.PeopleDTO;
+
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,16 +21,14 @@ public class People {
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
-    @Column(name = "email")
+    @Column(name = "email",unique = true)
     private String email;
     @Column(name = "date_of_birth")
     private String dateOfBirth;
-    @Column(name = "phone_number")
+    @Column(name = "phone_number",unique = true)
     private String phoneNumber;
-
-    @ManyToOne
-    @JoinColumn(name = "guardian_id")
-    private Guardian guardian;
+    @Column(name = "guardian_id")
+    private Long guardianId;
     @ManyToOne
     @JoinColumn(name = "area_id")
     private Area area;
