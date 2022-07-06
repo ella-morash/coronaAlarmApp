@@ -3,6 +3,7 @@ package com.example.coronaalarmapp.util;
 import com.example.coronaalarmapp.dto.AreaDTO;
 import com.example.coronaalarmapp.dto.CityDTO;
 import com.example.coronaalarmapp.dto.PeopleDTORequest;
+import com.example.coronaalarmapp.dto.PeopleDTOResponse;
 import com.example.coronaalarmapp.entity.Area;
 import com.example.coronaalarmapp.entity.City;
 import com.example.coronaalarmapp.entity.People;
@@ -75,6 +76,39 @@ public class Convertor {
                 .guardianId(request.getGuardianId())
                 .area(area)
                 .city(city)
+                .build();
+    }
+
+    public PeopleDTOResponse convertPersonToPeopleDTOResponse(People people) {
+        People guardian = peopleRepository.findById(people.getGuardianId()).orElse(null);
+
+        List<People> children = peopleRepository.findPeopleByGuardianId(guardian.getId());
+        List<PeopleDTOResponse> childrenDTO = null;
+        if (!children.isEmpty()) {
+             childrenDTO =  children.stream().map(ch -> {
+                return PeopleDTOResponse.builder()
+                        .firstName(ch.getFirstName())
+                        .lastName(ch.getLastName())
+                        .phoneNumber(ch.getPhoneNumber())
+                        .email(ch.getEmail())
+                        .build();
+            }).toList();
+        }
+
+        return PeopleDTOResponse.builder()
+                .firstName(people.getFirstName())
+                .lastName(people.getLastName())
+                .phoneNumber(people.getPhoneNumber())
+                .email(people.getEmail())
+                .guardian(PeopleDTOResponse.builder()
+                        .firstName(guardian.getFirstName())
+                        .lastName(guardian.getLastName())
+                        .email(guardian.getEmail())
+                        .phoneNumber(guardian.getPhoneNumber())
+                        .build())
+                .children(childrenDTO)
+                .areaId(people.getArea().getId())
+                .cityId(people.getCity().getId())
                 .build();
     }
 

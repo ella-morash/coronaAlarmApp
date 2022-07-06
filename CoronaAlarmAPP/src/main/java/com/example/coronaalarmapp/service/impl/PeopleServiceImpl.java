@@ -2,7 +2,10 @@ package com.example.coronaalarmapp.service.impl;
 
 
 import com.example.coronaalarmapp.dto.MoveChildrenRequestDTO;
+import com.example.coronaalarmapp.dto.MovePersonToCityRequestDTO;
 import com.example.coronaalarmapp.dto.PeopleDTORequest;
+import com.example.coronaalarmapp.dto.PeopleDTOResponse;
+import com.example.coronaalarmapp.entity.Area;
 import com.example.coronaalarmapp.entity.People;
 import com.example.coronaalarmapp.repository.PeopleRepository;
 import com.example.coronaalarmapp.service.PeopleService;
@@ -132,11 +135,50 @@ public class PeopleServiceImpl implements PeopleService {
         });
 
         //- verify, that `toGuardian` is not a child and does not have a guardian
-
+        People toGuardian = peopleRepository.findById(request.getToGuardian())
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("No such guardian with id %d",request.getToGuardian())));
+        if (toGuardian.getGuardianId()!=null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,String.format("Person with id %d can not be a guardian",request.getToGuardian()));
+        }
 
 
         //- on move, childrens’ city and area should be changed to guardians city and area
+
+        children.forEach(person-> {
+            People.builder()
+                    .guardianId(toGuardian.getId())
+                    .area(toGuardian.getArea())
+                    .city(toGuardian.getCity())
+                    .build();
+            peopleRepository.save(person);
+
+        });
     }
+
+    @Override
+    public PeopleDTOResponse getPersonById(Long id) {
+        return convertor.convertPersonToPeopleDTOResponse(peopleRepository.findById(id)
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("No such person with id %d",id))));
+    }
+
+    @Override
+    public PeopleDTOResponse getPersonByEmail(String email) { // should i throw any exception here ?
+        return convertor.convertPersonToPeopleDTOResponse(peopleRepository.findByEmail(email));
+    }
+
+    @Override
+    public void movePersonToAnotherCity(MovePersonToCityRequestDTO request) {
+        // - person with a guardian cannot be moved - 422 UNPROCESSABLE_ENTITY + reason
+
+
+
+        //- on moving parent - all children get moved as well
+
+    }
+
+
 }
 
 
