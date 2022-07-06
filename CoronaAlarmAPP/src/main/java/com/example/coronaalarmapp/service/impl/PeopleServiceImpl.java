@@ -6,7 +6,9 @@ import com.example.coronaalarmapp.dto.MovePersonToCityRequestDTO;
 import com.example.coronaalarmapp.dto.PeopleDTORequest;
 import com.example.coronaalarmapp.dto.PeopleDTOResponse;
 import com.example.coronaalarmapp.entity.Area;
+import com.example.coronaalarmapp.entity.City;
 import com.example.coronaalarmapp.entity.People;
+import com.example.coronaalarmapp.repository.CityRepository;
 import com.example.coronaalarmapp.repository.PeopleRepository;
 import com.example.coronaalarmapp.service.PeopleService;
 import com.example.coronaalarmapp.util.Convertor;
@@ -29,6 +31,9 @@ public class PeopleServiceImpl implements PeopleService {
 
     @Autowired
     private PeopleRepository peopleRepository;
+
+    @Autowired
+    private CityRepository cityRepository;
 
     @Autowired
     private Convertor convertor;
@@ -170,11 +175,33 @@ public class PeopleServiceImpl implements PeopleService {
 
     @Override
     public void movePersonToAnotherCity(MovePersonToCityRequestDTO request) {
+
+        City toCity = cityRepository.findById(request.getToCityId())
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("No such city with id %d",request.getToCityId())));
+
+        People person = peopleRepository.findById(request.getPersonId())
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
+                String.format("No such person with id %d",request.getPersonId())));
         // - person with a guardian cannot be moved - 422 UNPROCESSABLE_ENTITY + reason
-
-
+        if (person.getGuardianId()!=null) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,"Person has a guardian and can not be moved");
+        }
 
         //- on moving parent - all children get moved as well
+        List<People> children = peopleRepository.findPeopleByGuardianId(person.getId());
+
+        if (!children.isEmpty()) {
+             children.forEach(ch ->
+                    People.builder()
+                        .city(toCity)
+                        .build()
+            );
+        }
+        peopleRepository.saveAll(children);
+        person.setCity(toCity);
+        peopleRepository.save(person);
+
 
     }
 
