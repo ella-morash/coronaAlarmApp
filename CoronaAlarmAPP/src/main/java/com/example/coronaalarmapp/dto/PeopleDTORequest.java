@@ -1,6 +1,7 @@
 package com.example.coronaalarmapp.dto;
 
 
+import com.sun.istack.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +25,7 @@ public class PeopleDTORequest {
     private String email;
     private String dateOfBirth;
     private String phoneNumber;
+    @Nullable
     private Long guardianId;
     private List<PeopleDTORequest> guardians;
     private Long cityId;

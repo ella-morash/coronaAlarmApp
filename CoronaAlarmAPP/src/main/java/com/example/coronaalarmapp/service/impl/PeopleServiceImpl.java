@@ -47,8 +47,9 @@ public class PeopleServiceImpl implements PeopleService {
     public void createPerson(PeopleDTORequest request)  {
 
 
-        if(request.getGuardianId() == null) {
+        if(request.getGuardianId() == 0) {
             peopleRepository.save(convertor.convertToPerson(request));
+            return;
         }
 
         // prevent a guardian of a guardian
@@ -98,26 +99,33 @@ public class PeopleServiceImpl implements PeopleService {
     public void addGuardianToPerson(PeopleDTORequest request, Long id) {
         People person = peopleRepository.findById(id)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("No person with id %d",id)));
+        if ( person.getGuardianId()==0||person.getGuardianId()==null) {
+            LocalDate now = LocalDate.now();
+            long diff = dateFormat.difference(request.getDateOfBirth(),now);
+            if (diff < 18) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "The age should be greater then 18 ");
 
-        LocalDate now = LocalDate.now();
-        long diff = dateFormat.difference(request.getDateOfBirth(),now);
-        if (diff < 18) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "The age should be greater then 18 ");
+            }
+
+            People guardianToAdd = People.builder()
+                    .firstName(request.getFirstName())
+                    .lastName(request.getLastName())
+                    .email(request.getEmail())
+                    .dateOfBirth(request.getDateOfBirth())
+                    .phoneNumber(request.getPhoneNumber())
+                    .build();
+            peopleRepository.save(guardianToAdd);
+
+            person.setGuardianId(guardianToAdd.getId());
+
+            peopleRepository.save(person);
+
+        } else {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,String.format("Person with id %d already has a guardian",person.getId()));
 
         }
 
-        People guardianToAdd = People.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .dateOfBirth(request.getDateOfBirth())
-                .phoneNumber(request.getPhoneNumber())
-                .build();
-        peopleRepository.save(guardianToAdd);
 
-        person.setGuardianId(guardianToAdd.getId());
-
-        peopleRepository.save(person);
 
     }
 
@@ -143,22 +151,26 @@ public class PeopleServiceImpl implements PeopleService {
         People toGuardian = peopleRepository.findById(request.getToGuardian())
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
                         String.format("No such guardian with id %d",request.getToGuardian())));
-        if (toGuardian.getGuardianId()!=null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,String.format("Person with id %d can not be a guardian",request.getToGuardian()));
-        }
+
 
 
         //- on move, childrens’ city and area should be changed to guardians city and area
+       if (toGuardian.getGuardianId() == 0 || toGuardian.getGuardianId() == null) {
+           children.forEach(person-> {
+               People.builder()
+                       .guardianId(toGuardian.getId())
+                       .area(toGuardian.getArea())
+                       .city(toGuardian.getCity())
+                       .build();
+               peopleRepository.save(person);
 
-        children.forEach(person-> {
-            People.builder()
-                    .guardianId(toGuardian.getId())
-                    .area(toGuardian.getArea())
-                    .city(toGuardian.getCity())
-                    .build();
-            peopleRepository.save(person);
+           });
 
-        });
+       } else {
+           throw new ResponseStatusException(HttpStatus.CONFLICT,String.format("Person with id %d can not be a guardian",request.getToGuardian()));
+
+       }
+
     }
 
     @Override
@@ -169,7 +181,7 @@ public class PeopleServiceImpl implements PeopleService {
     }
 
     @Override
-    public PeopleDTOResponse getPersonByEmail(String email) { // should i throw any exception here ?
+    public PeopleDTOResponse getPersonByEmail(String email) { // should I throw any exception here ?
         return convertor.convertPersonToPeopleDTOResponse(peopleRepository.findByEmail(email));
     }
 
@@ -184,7 +196,7 @@ public class PeopleServiceImpl implements PeopleService {
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
                 String.format("No such person with id %d",request.getPersonId())));
         // - person with a guardian cannot be moved - 422 UNPROCESSABLE_ENTITY + reason
-        if (person.getGuardianId()!=null) {
+        if (person.getGuardianId()!=0||person.getGuardianId()!=null) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,"Person has a guardian and can not be moved");
         }
 

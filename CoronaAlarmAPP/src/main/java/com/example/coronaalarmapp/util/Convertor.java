@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -80,36 +81,50 @@ public class Convertor {
     }
 
     public PeopleDTOResponse convertPersonToPeopleDTOResponse(People people) {
-        People guardian = peopleRepository.findById(people.getGuardianId()).orElse(null);
+        List<PeopleDTOResponse> childrenDTO = new ArrayList<>();
+        People guardian = new People();
 
-        List<People> children = peopleRepository.findPeopleByGuardianId(guardian.getId());
-        List<PeopleDTOResponse> childrenDTO = null;
-        if (!children.isEmpty()) {
-             childrenDTO =  children.stream().map(ch -> {
-                return PeopleDTOResponse.builder()
-                        .firstName(ch.getFirstName())
-                        .lastName(ch.getLastName())
-                        .phoneNumber(ch.getPhoneNumber())
-                        .email(ch.getEmail())
-                        .build();
-            }).toList();
+        if (people.getGuardianId() == null ||people.getGuardianId() == 0) {
+            List<People> children = peopleRepository.findPeopleByGuardianId(people.getId());
+            if (!children.isEmpty()) {
+                childrenDTO =  children.stream().map(ch -> {
+                    return PeopleDTOResponse.builder()
+                            .firstName(ch.getFirstName())
+                            .lastName(ch.getLastName())
+                            .phoneNumber(ch.getPhoneNumber())
+                            .email(ch.getEmail())
+                            .build();
+                }).toList();
+            }
+            return PeopleDTOResponse.builder()
+                    .firstName(people.getFirstName())
+                    .lastName(people.getLastName())
+                    .phoneNumber(people.getPhoneNumber())
+                    .email(people.getEmail())
+
+                    .children(childrenDTO)
+                    //.areaId(people.getArea().getId())
+                    //.cityId(people.getCity().getId())
+                    .build();
+        } else {
+            guardian = peopleRepository.findById(people.getGuardianId()).orElse(null);
+            return PeopleDTOResponse.builder()
+                    .firstName(people.getFirstName())
+                    .lastName(people.getLastName())
+                    .phoneNumber(people.getPhoneNumber())
+                    .email(people.getEmail())
+                    .guardian(PeopleDTOResponse.builder()
+                            .firstName(guardian.getFirstName())
+                            .lastName(guardian.getLastName())
+                            .email(guardian.getEmail())
+                            .phoneNumber(guardian.getPhoneNumber())
+                            .build())
+                    .build();
+
         }
 
-        return PeopleDTOResponse.builder()
-                .firstName(people.getFirstName())
-                .lastName(people.getLastName())
-                .phoneNumber(people.getPhoneNumber())
-                .email(people.getEmail())
-                .guardian(PeopleDTOResponse.builder()
-                        .firstName(guardian.getFirstName())
-                        .lastName(guardian.getLastName())
-                        .email(guardian.getEmail())
-                        .phoneNumber(guardian.getPhoneNumber())
-                        .build())
-                .children(childrenDTO)
-                .areaId(people.getArea().getId())
-                .cityId(people.getCity().getId())
-                .build();
+
+
     }
 
 
