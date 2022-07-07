@@ -14,5 +14,5 @@ public class MovePersonToCityRequestDTO {
 
     private Long personId;
     private Long fromCityId;
-    private Long ToCityId;
+    private Long toCityId;
 }

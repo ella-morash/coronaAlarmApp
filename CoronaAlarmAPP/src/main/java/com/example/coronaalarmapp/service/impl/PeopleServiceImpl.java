@@ -188,31 +188,46 @@ public class PeopleServiceImpl implements PeopleService {
     @Override
     public void movePersonToAnotherCity(MovePersonToCityRequestDTO request) {
 
+        City fromCity = cityRepository.findById(request.getFromCityId())
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("No such city with id %d",request.getFromCityId())));
+
+        People person = peopleRepository.findById(request.getPersonId())
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("No such person with id %d",request.getPersonId())));
+
+        if (!person.getCity().getId().equals(fromCity.getId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,String.format("Person is located in another city with id %d",person.getCity().getId()));
+        }
+
         City toCity = cityRepository.findById(request.getToCityId())
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
                         String.format("No such city with id %d",request.getToCityId())));
 
-        People person = peopleRepository.findById(request.getPersonId())
-                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
-                String.format("No such person with id %d",request.getPersonId())));
-        // - person with a guardian cannot be moved - 422 UNPROCESSABLE_ENTITY + reason
-        if (person.getGuardianId()!=0||person.getGuardianId()!=null) {
+
+
+        if (person.getGuardianId() == 0 || person.getGuardianId() == null) {
+            //- on moving parent - all children get moved as well
+            person.setCity(toCity);
+            peopleRepository.save(person);
+            List<People> children = peopleRepository.findPeopleByGuardianId(person.getId());
+
+            if (!children.isEmpty()) {
+                children.forEach(ch ->
+                        People.builder()
+                                .city(toCity)
+                                .build()
+                );
+            }
+            peopleRepository.saveAll(children);
+
+
+
+        } else { // - person with a guardian cannot be moved - 422 UNPROCESSABLE_ENTITY + reason
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,"Person has a guardian and can not be moved");
         }
 
-        //- on moving parent - all children get moved as well
-        List<People> children = peopleRepository.findPeopleByGuardianId(person.getId());
 
-        if (!children.isEmpty()) {
-             children.forEach(ch ->
-                    People.builder()
-                        .city(toCity)
-                        .build()
-            );
-        }
-        peopleRepository.saveAll(children);
-        person.setCity(toCity);
-        peopleRepository.save(person);
 
 
     }

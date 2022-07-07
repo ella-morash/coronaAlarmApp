@@ -24,11 +24,14 @@ public class AreaController {
 
     @GetMapping(path = "/api/areas")
     public List<AreaDTO> getAllAreas() {
-       return areaService.getAllAreas();
+
+        return areaService.getAllAreas();
     }
 
-    @GetMapping(path = "/api/areas?q={name}")
-    public AreaDTO getAreaByName(@RequestParam(name = "name",required = true) String name) {
+
+
+    @GetMapping(path = "/api/areas")
+    public AreaDTO getAreaByName(@RequestParam(name = "name") String name) {
         return areaService.getAreaByName(name);
     }
 }

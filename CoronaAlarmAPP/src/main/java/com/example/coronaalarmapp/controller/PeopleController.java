@@ -17,7 +17,7 @@ public class PeopleController {
     private PeopleService peopleService;
 
     @SneakyThrows
-    @PostMapping(path = "/api/people") // NOT FOUND
+    @PostMapping(path = "/api/people")
     public void createPerson(@RequestBody PeopleDTORequest peopleDTO){
 
         peopleService.createPerson(peopleDTO);
@@ -46,13 +46,13 @@ public class PeopleController {
         return peopleService.getPersonById(id);
     }
 
-    @GetMapping(path = "/api/people?email={email}")
+    @GetMapping(path = "/api/people")
     public PeopleDTOResponse getPersonByEmail(@RequestParam(name = "email") String email) {
         return peopleService.getPersonByEmail(email);
     }
 
     @PostMapping(path = "/api/people/move")
-    public void movePersonToAnotherCity(MovePersonToCityRequestDTO request) {
+    public void movePersonToAnotherCity(@RequestBody MovePersonToCityRequestDTO request) {
         peopleService.movePersonToAnotherCity(request);
     }
 
