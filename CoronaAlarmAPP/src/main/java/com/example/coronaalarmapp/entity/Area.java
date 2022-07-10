@@ -17,6 +17,8 @@ public class Area {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "area_id", nullable = false)
     private Long id;
+    @Column(name = "area_code")
+    private String areaCode;
 
     @Column(name = "name",unique = true,nullable = false)
     private String name;

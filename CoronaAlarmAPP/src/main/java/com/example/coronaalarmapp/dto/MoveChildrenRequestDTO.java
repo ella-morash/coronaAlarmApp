@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @NoArgsConstructor
@@ -14,7 +15,9 @@ import java.util.List;
 @Builder
 public class MoveChildrenRequestDTO {
 
+    @Positive
     private Long fromGuardian;
+    @Positive
     private Long toGuardian;
-    private List<Long> childrenIds;
+    private List<@Positive Long> childrenIds;
 }

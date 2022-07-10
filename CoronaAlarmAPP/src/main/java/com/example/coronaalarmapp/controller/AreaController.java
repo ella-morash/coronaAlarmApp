@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,7 +18,7 @@ public class AreaController {
 
     @PostMapping(path = "/api/areas")
     @ResponseStatus(HttpStatus.CREATED)
-    public void createArea(@RequestBody AreaDTO areaDTO) {
+    public void createArea(@Valid @RequestBody AreaDTO areaDTO) {
 
         areaService.createArea(areaDTO);
     }

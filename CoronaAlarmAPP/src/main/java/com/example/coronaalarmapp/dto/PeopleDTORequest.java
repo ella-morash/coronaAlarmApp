@@ -6,10 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @NoArgsConstructor
@@ -17,15 +16,23 @@ import java.util.List;
 @Data
 @Builder
 public class PeopleDTORequest {
+    @NotBlank
+    @Length(min=2,max=50)
     private String firstName;
+    @NotBlank
+    @Length(min=2,max=50)
     private String lastName;
-    @NotNull
+    @Length(min=10,max=50)
     @NotBlank
     @Email(message = "incorrect format of email")
     private String email;
+    @NotNull
+    @Past
     private String dateOfBirth;
+    @NotBlank
+    @Pattern(regexp = "(\\(?([\\d \\-\\)\\–\\+\\/\\(]+)\\)?([ .\\-–\\/]?)([\\d]+))")
     private String phoneNumber;
-    @Nullable
+    @Positive
     private Long guardianId;
     private List<PeopleDTORequest> guardians;
     private Long cityId;

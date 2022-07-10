@@ -1,5 +1,6 @@
 package com.example.coronaalarmapp.entity;
 
+import com.example.coronaalarmapp.entity.severitystatus.SeverityStatus;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,5 +24,9 @@ public class City {
     @ManyToOne
     @JoinColumn(name = "area_id")
     private Area area;
+
+    @Column(name = "severity")
+    @Convert
+    private SeverityStatus status;
 
 }

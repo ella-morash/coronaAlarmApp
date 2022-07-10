@@ -10,6 +10,8 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 public class PeopleController {
 
@@ -18,25 +20,25 @@ public class PeopleController {
 
     @SneakyThrows
     @PostMapping(path = "/api/people")
-    public void createPerson(@RequestBody PeopleDTORequest peopleDTO){
+    public void createPerson(@Valid @RequestBody PeopleDTORequest peopleDTO){
 
         peopleService.createPerson(peopleDTO);
     }
 
     @PutMapping(path = "/api/people/{id}")
-    public void updatePerson(@RequestBody PeopleDTORequest request,
+    public void updatePerson(@Valid @RequestBody PeopleDTORequest request,
                              @PathVariable(name = "id") Long id){
         peopleService.updatePerson(request,id);
     }
 
     @PostMapping(path = "/api/people/{id}/guardians")
-    public void addGuardianToPerson(@RequestBody PeopleDTORequest request,
+    public void addGuardianToPerson(@Valid @RequestBody PeopleDTORequest request,
                                     @PathVariable(name = "id")Long id) {
         peopleService.addGuardianToPerson(request,id);
     }
 
     @PatchMapping(path = "/api/people/{id}/guardians")
-    public void moveChildrenToAnotherGuardian(@RequestBody MoveChildrenRequestDTO request,
+    public void moveChildrenToAnotherGuardian(@Valid @RequestBody MoveChildrenRequestDTO request,
                                               @PathVariable(name = "id")Long id) {
         peopleService.moveChildrenToAnotherGuardian(request,id);
     }
@@ -52,7 +54,7 @@ public class PeopleController {
     }
 
     @PostMapping(path = "/api/people/move")
-    public void movePersonToAnotherCity(@RequestBody MovePersonToCityRequestDTO request) {
+    public void movePersonToAnotherCity(@Valid @RequestBody MovePersonToCityRequestDTO request) {
         peopleService.movePersonToAnotherCity(request);
     }
 

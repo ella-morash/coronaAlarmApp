@@ -6,6 +6,7 @@ import com.example.coronaalarmapp.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -15,7 +16,7 @@ public class CityController {
     private CityService cityService;
 
     @PostMapping(path = "/api/cities")
-    public void createCity(@RequestBody CityDTO cityDTO) {
+    public void createCity(@Valid @RequestBody CityDTO cityDTO) {
         cityService.createCity(cityDTO);
     }
 
