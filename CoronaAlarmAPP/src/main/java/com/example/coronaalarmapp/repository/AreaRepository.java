@@ -10,5 +10,7 @@ public interface AreaRepository extends JpaRepository<Area,Long> {
 
     Area getAreaByName(String name);
 
+    Area findAreaByAreaCode(String areaCode);
+
 
 }

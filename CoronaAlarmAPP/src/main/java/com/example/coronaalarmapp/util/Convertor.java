@@ -50,6 +50,7 @@ public class Convertor {
         return City.builder()
                 .name(cityDTO.getCityName().toLowerCase())
                 .area(area)
+                .status(cityDTO.getStatus())
                 .build();
     }
 
@@ -58,6 +59,7 @@ public class Convertor {
                 .cityId(city.getId())
                 .cityName(city.getName())
                 .areaId(city.getArea().getId())
+                .status(city.getStatus())
                 .build();
 
     }

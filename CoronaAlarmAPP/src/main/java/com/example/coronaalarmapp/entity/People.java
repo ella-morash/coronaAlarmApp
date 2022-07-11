@@ -4,6 +4,8 @@ package com.example.coronaalarmapp.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "people")
@@ -35,5 +37,7 @@ public class People {
     @ManyToOne
     @JoinColumn(name = "city_id")
     private City city;
+
+
 
 }

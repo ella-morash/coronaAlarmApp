@@ -23,7 +23,7 @@ public class AreaController {
         areaService.createArea(areaDTO);
     }
 
-    @GetMapping(path = "/api/areas")
+    @GetMapping(path = "/api/areas/all")
     public List<AreaDTO> getAllAreas() {
 
         return areaService.getAllAreas();

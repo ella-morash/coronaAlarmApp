@@ -5,50 +5,103 @@
 
 
 <!--    <changeSet id="1" author="ella">-->
-<!--        <createTable tableName="building">-->
+<!--        <createTable tableName="area">-->
 <!--            <column name="id" type="bigint" autoIncrement="true">-->
 <!--                <constraints primaryKey="true"/>-->
 <!--            </column>-->
 
-<!--            <column name="street" type="varchar(255)">-->
-<!--                <constraints nullable="false"/>-->
-<!--            </column>-->
-
-<!--            <column name="house_number" type="varchar(255)">-->
-<!--                <constraints nullable="false"/>-->
-<!--            </column>-->
-
-<!--            <column name="floors_count" type="number"/>-->
-<!--        </createTable>-->
-
-<!--        <createTable tableName="apartment">-->
-<!--            <column type="bigint" name="id" autoIncrement="true">-->
-<!--                <constraints primaryKey="true"/>-->
-<!--            </column>-->
-
-
-<!--            <column name="building_id" type="bigint">-->
-<!--                <constraints referencedTableName="building"-->
-<!--                             referencedColumnNames="id"-->
-<!--                             foreignKeyName="APARTMENT_BUILDING_ID_BUILDING_ID"/>-->
-<!--            </column>-->
-<!--        </createTable>-->
-
-<!--        <createTable tableName="owner">-->
-<!--            <column type="bigint" name="id" autoIncrement="true">-->
-<!--                <constraints primaryKey="true"/>-->
-<!--            </column>-->
-
 <!--            <column name="name" type="varchar(255)">-->
+<!--                <constraints nullable="false"/>-->
+<!--            </column>-->
+
+<!--            <column name="area_code" type="varchar(255)">-->
+<!--                <constraints nullable="false"/>-->
+<!--            </column>-->
+
+<!--        </createTable>-->
+
+<!--        <createTable tableName="city">-->
+<!--            <column type="bigint" name="id" autoIncrement="true">-->
+<!--                <constraints primaryKey="true"/>-->
+<!--            </column>-->
+
+
+<!--            <column name="area_id" type="bigint">-->
+<!--                <constraints referencedTableName="area"-->
+<!--                             referencedColumnNames="id"-->
+<!--                             foreignKeyName="CITY_TO_AREA_ID"/>-->
+<!--            </column>-->
+<!--            <column type="varchar(255)" name="name" >-->
+<!--                <constraints nullable="false"/>-->
+<!--            </column>-->
+<!--            <column type="varchar(255)" name="severity" >-->
+<!--                <constraints nullable="false"/>-->
+<!--            </column>-->
+<!--        </createTable>-->
+
+<!--        <createTable tableName="people">-->
+<!--            <column type="bigint" name="id" autoIncrement="true">-->
+<!--                <constraints primaryKey="true"/>-->
+<!--            </column>-->
+
+<!--            <column name="first_name" type="varchar(255)">-->
+<!--                <constraints  nullable="false"/>-->
+<!--            </column>-->
+
+<!--            <column name="last_name" type="varchar(255)">-->
+<!--                <constraints  nullable="false"/>-->
+<!--            </column>-->
+<!--            <column name="email" type="varchar(255)">-->
 <!--                <constraints unique="true" nullable="false"/>-->
 <!--            </column>-->
 
-<!--            <column name="apartment_id" type="bigint">-->
-<!--                <constraints referencedTableName="apartment"-->
+<!--            <column name="date_of_birth" type="varchar(255)">-->
+<!--                <constraints  nullable="false"/>-->
+<!--            </column>-->
+
+<!--            <column name="phone_number" type="varchar(255)">-->
+<!--                <constraints  unique="true" nullable="false"/>-->
+<!--            </column>-->
+
+
+<!--            <column name="guardian_id" type="bigint">-->
+<!--                <constraints />-->
+<!--            </column>-->
+
+<!--            <column name="area_id" type="bigint">-->
+<!--                <constraints referencedTableName="area"-->
 <!--                             referencedColumnNames="id"-->
-<!--                             foreignKeyName="OWNER_APARTMENT_ID_APARTMENT_ID"/>-->
+<!--                             foreignKeyName="PEOPLE_TO_AREA_ID"/>-->
+<!--            </column>-->
+
+<!--            <column name="city_id" type="bigint">-->
+<!--                <constraints referencedTableName="city"-->
+<!--                             referencedColumnNames="id"-->
+<!--                             foreignKeyName="PEOPLE_TO_CITY_ID"/>-->
+<!--            </column>-->
+
+
+<!--        </createTable>-->
+
+<!--        <createTable tableName="notification">-->
+<!--            <column type="bigint" name="id" autoIncrement="true">-->
+<!--                <constraints primaryKey="true"/>-->
+<!--            </column>-->
+
+
+<!--            <column name="area_id" type="bigint">-->
+<!--                <constraints referencedTableName="area"-->
+<!--                             referencedColumnNames="id"-->
+<!--                             foreignKeyName="CITY_TO_AREA_ID"/>-->
+<!--            </column>-->
+<!--            <column type="varchar(255)" name="name" >-->
+<!--                <constraints nullable="false"/>-->
+<!--            </column>-->
+<!--            <column type="varchar(255)" name="severity" >-->
+<!--                <constraints nullable="false"/>-->
 <!--            </column>-->
 <!--        </createTable>-->
+
 <!--    </changeSet>-->
 
 

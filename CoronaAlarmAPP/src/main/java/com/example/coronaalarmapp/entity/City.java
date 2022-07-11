@@ -1,6 +1,7 @@
 package com.example.coronaalarmapp.entity;
 
 import com.example.coronaalarmapp.entity.severitystatus.SeverityStatus;
+import com.example.coronaalarmapp.entity.severitystatus.StatusConverter;
 import lombok.*;
 
 import javax.persistence.*;
@@ -26,7 +27,7 @@ public class City {
     private Area area;
 
     @Column(name = "severity")
-    @Convert
+    @Convert(converter = StatusConverter.class)
     private SeverityStatus status;
 
 }
