@@ -3,8 +3,10 @@ package com.example.coronaalarmapp.service.impl;
 import com.example.coronaalarmapp.dto.CityDTO;
 import com.example.coronaalarmapp.entity.Area;
 import com.example.coronaalarmapp.entity.City;
+import com.example.coronaalarmapp.entity.severitystatus.SeverityStatus;
 import com.example.coronaalarmapp.repository.AreaRepository;
 import com.example.coronaalarmapp.repository.CityRepository;
+import com.example.coronaalarmapp.repository.NotificationRepository;
 import com.example.coronaalarmapp.service.CityService;
 import com.example.coronaalarmapp.util.Convertor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +29,18 @@ public class CityServiceImpl implements CityService {
     @Autowired
     private Convertor convertor;
 
+    @Autowired
+    private NotificationRepository notificationRepository;
+
     @Override
     public void createCity(CityDTO cityDTO) {
         Area area = areaRepository.findById(cityDTO.getAreaId())
                 .orElseThrow(()->
                         new ResponseStatusException(HttpStatus.NOT_FOUND,
                                 String.format("No area with id %d",cityDTO.getAreaId())));
-        cityRepository.save(convertor.convertFromCityDTOToCity(cityDTO,area));
+        SeverityStatus status = notificationRepository.findByArea_Id(area.getId());
+
+        cityRepository.save(convertor.convertFromCityDTOToCity(cityDTO,area,status));
 
     }
 

@@ -7,6 +7,7 @@ import com.example.coronaalarmapp.dto.PeopleDTOResponse;
 import com.example.coronaalarmapp.entity.Area;
 import com.example.coronaalarmapp.entity.City;
 import com.example.coronaalarmapp.entity.People;
+import com.example.coronaalarmapp.entity.severitystatus.SeverityStatus;
 import com.example.coronaalarmapp.repository.AreaRepository;
 import com.example.coronaalarmapp.repository.CityRepository;
 import com.example.coronaalarmapp.repository.PeopleRepository;
@@ -46,11 +47,11 @@ public class Convertor {
                 .build();
     }
 
-    public City convertFromCityDTOToCity(CityDTO cityDTO,Area area) {
+    public City convertFromCityDTOToCity(CityDTO cityDTO, Area area, SeverityStatus status) {
         return City.builder()
                 .name(cityDTO.getCityName().toLowerCase())
                 .area(area)
-                .status(cityDTO.getStatus())
+                .status(status)
                 .build();
     }
 

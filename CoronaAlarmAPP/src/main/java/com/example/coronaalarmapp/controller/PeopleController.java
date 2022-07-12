@@ -8,6 +8,7 @@ import com.example.coronaalarmapp.dto.PeopleDTOResponse;
 import com.example.coronaalarmapp.service.PeopleService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -20,6 +21,7 @@ public class PeopleController {
 
     @SneakyThrows
     @PostMapping(path = "/api/people")
+    @ResponseStatus(HttpStatus.CREATED)
     public void createPerson(@Valid @RequestBody PeopleDTORequest peopleDTO){
 
         peopleService.createPerson(peopleDTO);
@@ -32,12 +34,15 @@ public class PeopleController {
     }
 
     @PostMapping(path = "/api/people/{id}/guardians")
+    @ResponseStatus(HttpStatus.CREATED)
     public void addGuardianToPerson(@Valid @RequestBody PeopleDTORequest request,
                                     @PathVariable(name = "id")Long id) {
         peopleService.addGuardianToPerson(request,id);
     }
 
     @PatchMapping(path = "/api/people/{id}/guardians")
+    @ResponseStatus(HttpStatus.CREATED)
+
     public void moveChildrenToAnotherGuardian(@Valid @RequestBody MoveChildrenRequestDTO request,
                                               @PathVariable(name = "id")Long id) {
         peopleService.moveChildrenToAnotherGuardian(request,id);
@@ -54,6 +59,7 @@ public class PeopleController {
     }
 
     @PostMapping(path = "/api/people/move")
+    @ResponseStatus(HttpStatus.CREATED)
     public void movePersonToAnotherCity(@Valid @RequestBody MovePersonToCityRequestDTO request) {
         peopleService.movePersonToAnotherCity(request);
     }

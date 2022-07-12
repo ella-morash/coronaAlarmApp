@@ -5,10 +5,7 @@ import com.example.coronaalarmapp.entity.Notification;
 import com.example.coronaalarmapp.entity.NotificationPeople;
 import com.example.coronaalarmapp.entity.People;
 import com.example.coronaalarmapp.entity.severitystatus.SeverityStatus;
-import com.example.coronaalarmapp.repository.AreaRepository;
-import com.example.coronaalarmapp.repository.NotificationPeopleRepository;
-import com.example.coronaalarmapp.repository.NotificationRepository;
-import com.example.coronaalarmapp.repository.PeopleRepository;
+import com.example.coronaalarmapp.repository.*;
 import com.example.coronaalarmapp.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +29,8 @@ public class NotificationServiceImpl implements NotificationService {
     private PeopleRepository peopleRepository;
     @Autowired
     private AreaRepository areaRepository;
+    @Autowired
+    private CityRepository cityRepository;
 
     @Override
     @Transactional
@@ -47,7 +46,8 @@ public class NotificationServiceImpl implements NotificationService {
         List<People> peopleInArea = peopleRepository.findAllByArea(area); // to print
 
         if (peopleInArea.isEmpty()) {
-            peopleInArea = new ArrayList<>();
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    String.format("no people found in the area %s",area.getName()));
         }
 
         Notification notification = Notification.builder()
@@ -63,6 +63,11 @@ public class NotificationServiceImpl implements NotificationService {
                     .people(people)
                     .build();
           notificationPeopleRepository.save(notificationPeople);
+          var city = people.getCity();
+          city.setStatus(severity);
+          peopleRepository.save(people);
+          cityRepository.save(city);
+
         });
 
     }

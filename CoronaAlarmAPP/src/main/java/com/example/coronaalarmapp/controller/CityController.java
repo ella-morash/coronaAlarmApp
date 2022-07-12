@@ -4,6 +4,7 @@ package com.example.coronaalarmapp.controller;
 import com.example.coronaalarmapp.dto.CityDTO;
 import com.example.coronaalarmapp.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -16,6 +17,7 @@ public class CityController {
     private CityService cityService;
 
     @PostMapping(path = "/api/cities")
+    @ResponseStatus(HttpStatus.CREATED)
     public void createCity(@Valid @RequestBody CityDTO cityDTO) {
         cityService.createCity(cityDTO);
     }
@@ -25,7 +27,7 @@ public class CityController {
         return cityService.getAllCities();
     }
 
-    @GetMapping(path = "/api/cities?q={name}")
+    @GetMapping(path = "/api/city")
     public CityDTO getCityByName(@RequestParam(name = "name",required = true) String name){
         return cityService.getCityByName(name);
 
