@@ -35,6 +35,7 @@ public class Convertor {
     public Area convertFromDTOToArea(AreaDTO areaDTO) {
         return Area.builder()
                 .name(areaDTO.getAreaName().toLowerCase())
+                .areaCode(areaDTO.getAreaCode())
                 .build();
     }
 
@@ -43,6 +44,7 @@ public class Convertor {
                 .map(City::getId).toList();
         return AreaDTO.builder().areaId(area.getId())
                 .areaName(area.getName())
+                .areaCode(area.getAreaCode())
                 .citiesId(citiesId)
                 .build();
     }

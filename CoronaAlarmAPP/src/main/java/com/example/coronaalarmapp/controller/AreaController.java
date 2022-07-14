@@ -33,6 +33,7 @@ public class AreaController {
 
     @GetMapping(path = "/api/areas")
     public AreaDTO getAreaByName(@RequestParam(name = "name") String name) {
+
         return areaService.getAreaByName(name);
     }
 }
