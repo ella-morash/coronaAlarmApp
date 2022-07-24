@@ -23,14 +23,6 @@ import java.util.List;
 @Component
 public class Convertor {
 
-    @Autowired
-    private CityRepository cityRepository;
-
-    @Autowired
-    private PeopleRepository peopleRepository;
-
-    @Autowired
-    private AreaRepository areaRepository;
 
     public Area convertFromDTOToArea(AreaDTO areaDTO) {
         return Area.builder()
@@ -39,9 +31,8 @@ public class Convertor {
                 .build();
     }
 
-    public  AreaDTO convertFromAreaToDTO(Area area) {
-        List<Long> citiesId = cityRepository.findAllByArea(area).stream()
-                .map(City::getId).toList();
+    public  AreaDTO convertFromAreaToDTO(Area area,List<Long> citiesId) {
+
         return AreaDTO.builder().areaId(area.getId())
                 .areaName(area.getName())
                 .areaCode(area.getAreaCode())
@@ -67,11 +58,7 @@ public class Convertor {
 
     }
 
-    public People convertToPerson(PeopleDTORequest request) {
-        City city = cityRepository.findById(request.getCityId()).
-                orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("No city with id %d",request.getCityId())));
-        Area area = areaRepository.findById(request.getAreaId()).
-                orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("No area with id %d",request.getAreaId())));
+    public People convertToPerson(PeopleDTORequest request,City city,Area area) {
 
         return People.builder()
                 .firstName(request.getFirstName())
@@ -85,21 +72,19 @@ public class Convertor {
                 .build();
     }
 
-    public PeopleDTOResponse convertPersonToPeopleDTOResponse(People people) {
+    public PeopleDTOResponse convertPersonToPeopleDTOResponse(People people,List<People> children,People guardian) {
         List<PeopleDTOResponse> childrenDTO = new ArrayList<>();
-        People guardian = new People();
+
 
         if (people.getGuardianId() == null ||people.getGuardianId() == 0) {
-            List<People> children = peopleRepository.findPeopleByGuardianId(people.getId());
+
             if (!children.isEmpty()) {
-                childrenDTO =  children.stream().map(ch -> {
-                    return PeopleDTOResponse.builder()
-                            .firstName(ch.getFirstName())
-                            .lastName(ch.getLastName())
-                            .phoneNumber(ch.getPhoneNumber())
-                            .email(ch.getEmail())
-                            .build();
-                }).toList();
+                childrenDTO =  children.stream().map(ch -> PeopleDTOResponse.builder()
+                        .firstName(ch.getFirstName())
+                        .lastName(ch.getLastName())
+                        .phoneNumber(ch.getPhoneNumber())
+                        .email(ch.getEmail())
+                        .build()).toList();
             }
             return PeopleDTOResponse.builder()
                     .firstName(people.getFirstName())
@@ -112,7 +97,8 @@ public class Convertor {
                     //.cityId(people.getCity().getId())
                     .build();
         } else {
-            guardian = peopleRepository.findById(people.getGuardianId()).orElse(null);
+
+
             return PeopleDTOResponse.builder()
                     .firstName(people.getFirstName())
                     .lastName(people.getLastName())

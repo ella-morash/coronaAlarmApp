@@ -59,12 +59,12 @@ public class CityServiceImpl implements CityService {
 
     @Override
     public CityDTO getCityByName(String name) {
-        Optional<City> cityOptional = Optional.ofNullable(cityRepository.findByName(name.toLowerCase()));
-        if (cityOptional.isEmpty()) {
+        City city = cityRepository.findByName(name.toLowerCase());
+        if (city == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("No area with name %s",name));
         }
 
-        return convertor.convertFromCityToDTO(cityOptional.get());
+        return convertor.convertFromCityToDTO(city);
 
 
     }

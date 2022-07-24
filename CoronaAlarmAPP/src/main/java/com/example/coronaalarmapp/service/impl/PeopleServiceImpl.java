@@ -8,6 +8,7 @@ import com.example.coronaalarmapp.dto.PeopleDTOResponse;
 import com.example.coronaalarmapp.entity.Area;
 import com.example.coronaalarmapp.entity.City;
 import com.example.coronaalarmapp.entity.People;
+import com.example.coronaalarmapp.repository.AreaRepository;
 import com.example.coronaalarmapp.repository.CityRepository;
 import com.example.coronaalarmapp.repository.PeopleRepository;
 import com.example.coronaalarmapp.service.PeopleService;
@@ -36,6 +37,9 @@ public class PeopleServiceImpl implements PeopleService {
     private CityRepository cityRepository;
 
     @Autowired
+    private AreaRepository areaRepository;
+
+    @Autowired
     private Convertor convertor;
 
     @Autowired
@@ -46,9 +50,15 @@ public class PeopleServiceImpl implements PeopleService {
     @Transactional
     public void createPerson(PeopleDTORequest request)  {
 
+        City city = cityRepository.findById(request.getCityId()).
+                orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("No city with id %d",request.getCityId())));
+        Area area = areaRepository.findById(request.getAreaId()).
+                orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("No area with id %d",request.getAreaId())));
+
+
 
         if(request.getGuardianId() == 0) {
-            peopleRepository.save(convertor.convertToPerson(request));
+            peopleRepository.save(convertor.convertToPerson(request,city,area));
             return;
         }
 
@@ -71,7 +81,7 @@ public class PeopleServiceImpl implements PeopleService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "The age should be greater then 18 ");
 
         }
-        peopleRepository.save(convertor.convertToPerson(request));
+        peopleRepository.save(convertor.convertToPerson(request,city,area));
 
 
     }
@@ -175,14 +185,28 @@ public class PeopleServiceImpl implements PeopleService {
 
     @Override
     public PeopleDTOResponse getPersonById(Long id) {
-        return convertor.convertPersonToPeopleDTOResponse(peopleRepository.findById(id)
+        People people = peopleRepository.findById(id)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        String.format("No such person with id %d",id))));
+                        String.format("No such person with id %d",id)));
+
+        List<People> children =  peopleRepository.findPeopleByGuardianId(people.getId());
+        People guardian = peopleRepository.findById(people.getGuardianId()).orElse(null);
+
+        return convertor.convertPersonToPeopleDTOResponse(people,children,guardian);
     }
 
     @Override
-    public PeopleDTOResponse getPersonByEmail(String email) { // should I throw any exception here ?
-        return convertor.convertPersonToPeopleDTOResponse(peopleRepository.findByEmail(email));
+    public PeopleDTOResponse getPersonByEmail(String email) {
+        Optional<People> people = Optional.ofNullable(peopleRepository.findByEmail(email));
+
+        if (people.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("No person with email %s",email));
+        }
+
+        List<People> children =  peopleRepository.findPeopleByGuardianId(people.get().getId());
+        People guardian = peopleRepository.findById(people.get().getGuardianId()).orElse(null);
+
+        return convertor.convertPersonToPeopleDTOResponse(people.get(),children,guardian);
     }
 
     @Override

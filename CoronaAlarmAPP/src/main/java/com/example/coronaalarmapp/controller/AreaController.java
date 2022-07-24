@@ -2,6 +2,7 @@ package com.example.coronaalarmapp.controller;
 
 
 import com.example.coronaalarmapp.dto.AreaDTO;
+import com.example.coronaalarmapp.entity.Area;
 import com.example.coronaalarmapp.service.AreaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class AreaController {
     }
 
     @GetMapping(path = "/api/areas/all")
-    public List<AreaDTO> getAllAreas() {
+    public List<Area> getAllAreas() {
 
         return areaService.getAllAreas();
     }
@@ -35,5 +36,10 @@ public class AreaController {
     public AreaDTO getAreaByName(@RequestParam(name = "name") String name) {
 
         return areaService.getAreaByName(name);
+    }
+
+    @GetMapping(path = "/api/areas/area")
+    public AreaDTO getAreaById(@RequestParam(name = "id") Long id) {
+        return areaService.getAreaByID(id);
     }
 }
