@@ -38,6 +38,12 @@ public class CityServiceImpl implements CityService {
                 .orElseThrow(()->
                         new ResponseStatusException(HttpStatus.NOT_FOUND,
                                 String.format("No area with id %d",cityDTO.getAreaId())));
+
+        if (cityRepository.existsByName(cityDTO.getCityName())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    String.format("City with name %s already exists",cityDTO.getCityName()));
+        }
+
         SeverityStatus status = notificationRepository.findByArea_Id(area.getId());
 
         cityRepository.save(convertor.convertFromCityDTOToCity(cityDTO,area,status));
@@ -46,25 +52,24 @@ public class CityServiceImpl implements CityService {
 
     @Override
     public List<CityDTO> getAllCities() {
+
         List<CityDTO> cities = cityRepository.findAll()
                 .stream()
                 .map(city->convertor.convertFromCityToDTO(city)).toList();
 
-        if (cities.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No cities found");
-        }
 
-        return cities;
+        return cities.isEmpty() ? List.of() : cities;
     }
 
     @Override
     public CityDTO getCityByName(String name) {
-        City city = cityRepository.findByName(name.toLowerCase());
-        if (city == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("No area with name %s",name));
+        Optional<City> city = Optional.ofNullable(cityRepository.findByName(name.toLowerCase()));
+
+        if (city.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("No city with name %s",name));
         }
 
-        return convertor.convertFromCityToDTO(city);
+        return convertor.convertFromCityToDTO(city.get());
 
 
     }

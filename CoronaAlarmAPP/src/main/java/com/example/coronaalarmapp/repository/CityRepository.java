@@ -11,4 +11,6 @@ public interface CityRepository extends JpaRepository<City,Long> {
     List<City> findAllByArea(Area area);
 
     City findByName(String name);
+
+    boolean existsByName(String name);
 }

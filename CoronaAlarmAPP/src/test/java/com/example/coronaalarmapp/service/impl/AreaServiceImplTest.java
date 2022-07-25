@@ -257,6 +257,7 @@ public class AreaServiceImplTest {
         List<Area> response = areaService.getAllAreas();
 
         Assertions.assertFalse(response.isEmpty());
+        Assertions.assertEquals(expectedListSize,areas.size());
 
     }
 
