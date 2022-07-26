@@ -34,7 +34,7 @@ public class PeopleDTORequest {
     private String phoneNumber;
     @Positive
     private Long guardianId;
-    private List<PeopleDTORequest> guardians;
+    private List<PeopleDTORequest> children;
     private Long cityId;
     private Long areaId;
 

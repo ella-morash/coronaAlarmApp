@@ -74,18 +74,41 @@ public class PeopleServiceImpl implements PeopleService {
         Area area = areaRepository.findById(request.getAreaId()).
                 orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("No area with id %d",request.getAreaId())));
 
+        People guardian;
 
-        if(request.getGuardianId() == 0 || request.getGuardianId() == null) {
-            peopleRepository.save(convertor.convertToPerson(request,city,area));
-            return;
+
+        if(request.getGuardianId() != null && !request.getChildren().isEmpty()) {
+
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"Person can not be a guardian and be guarded at the same time");
+
+        } else if (request.getGuardianId() == null && !request.getChildren().isEmpty()) {
+
+            guardian = convertor.convertToPerson(request,city,area);
+            var children = request.getChildren();
+
+            children.forEach(ch-> {
+                Optional<People> mayBeGuardian = Optional.ofNullable(peopleRepository.findByEmail(ch.getEmail()));
+                if (mayBeGuardian.isPresent()) {
+                    var chi = peopleRepository.findPeopleByGuardianId(mayBeGuardian.get().getId());
+                    if (!chi.isEmpty()) {
+                        throw new ResponseStatusException(HttpStatus.CONFLICT,String.format("Person %s is a guardian and can not be a child",ch.getFirstName()));
+                    }
+                }
+            });
+
+
+
+
+        } else {
+            guardian = peopleRepository.findById(request.getGuardianId())
+                    .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            String.format("No guardian with id %d exists",request.getGuardianId())));
         }
 
 
-        People guardianToBe = peopleRepository.findById(request.getGuardianId())
-                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("no person with id %d exists as a guardian",request.getGuardianId())));
         // a guardian should be 18+ years old from now
         LocalDate now = LocalDate.now();
-        long diff = dateFormat.difference(guardianToBe.getDateOfBirth(),now);
+        long diff = dateFormat.difference(guardian.getDateOfBirth(),now);
         if (diff < 18) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "The age should be greater then 18 ");
 
@@ -117,33 +140,44 @@ public class PeopleServiceImpl implements PeopleService {
     @Override
     @Transactional
     public void addGuardianToPerson(PeopleDTORequest request, Long id) {
+
         People person = peopleRepository.findById(id)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("No person with id %d",id)));
-        if ( person.getGuardianId()==0||person.getGuardianId()==null) {
-            LocalDate now = LocalDate.now();
-            long diff = dateFormat.difference(request.getDateOfBirth(),now);
-            if (diff < 18) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "The age should be greater then 18 ");
+        var potentialChildren = peopleRepository.findPeopleByGuardianId(person.getId());
 
-            }
+        if (person.getGuardianId() != null) {
 
-            People guardianToAdd = People.builder()
-                    .firstName(request.getFirstName())
-                    .lastName(request.getLastName())
-                    .email(request.getEmail())
-                    .dateOfBirth(request.getDateOfBirth())
-                    .phoneNumber(request.getPhoneNumber())
-                    .build();
-            peopleRepository.save(guardianToAdd);
-
-            person.setGuardianId(guardianToAdd.getId());
-
-            peopleRepository.save(person);
-
-        } else {
             throw new ResponseStatusException(HttpStatus.CONFLICT,String.format("Person with id %d already has a guardian",person.getId()));
 
+
+
         }
+
+        if (!potentialChildren.isEmpty()) {
+
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"This person is a guardian itself");
+
+        }
+
+        LocalDate now = LocalDate.now();
+        long diff = dateFormat.difference(request.getDateOfBirth(),now);
+        if (diff < 18) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "The age should be greater then 18 ");
+
+        }
+
+        People guardianToAdd = People.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .dateOfBirth(request.getDateOfBirth())
+                .phoneNumber(request.getPhoneNumber())
+                .build();
+        peopleRepository.save(guardianToAdd);
+
+        person.setGuardianId(guardianToAdd.getId());
+
+        peopleRepository.save(person);
 
 
 
