@@ -73,7 +73,7 @@ public class Convertor {
     }
 
     public PeopleDTOResponse convertPersonToPeopleDTOResponse(People people,List<People> children,People guardian) {
-        List<PeopleDTOResponse> childrenDTO = new ArrayList<>();
+        List<PeopleDTOResponse> childrenDTO = List.of();
 
 
         if (people.getGuardianId() == null ||people.getGuardianId() == 0) {

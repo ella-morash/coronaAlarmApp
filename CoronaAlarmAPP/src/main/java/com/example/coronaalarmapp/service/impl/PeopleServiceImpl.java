@@ -50,30 +50,39 @@ public class PeopleServiceImpl implements PeopleService {
     @Transactional
     public void createPerson(PeopleDTORequest request)  {
 
+        if (peopleRepository.existsByEmail(request.getEmail()) )
+        {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    String.format("there is already an email %s",
+                            request.getEmail()));
+
+        }
+
+        if (peopleRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+
+
+
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    String.format("there is already a phone number %s",
+                            request.getPhoneNumber()));
+
+        }
+
+
         City city = cityRepository.findById(request.getCityId()).
                 orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("No city with id %d",request.getCityId())));
         Area area = areaRepository.findById(request.getAreaId()).
                 orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("No area with id %d",request.getAreaId())));
 
 
-
-        if(request.getGuardianId() == 0) {
+        if(request.getGuardianId() == 0 || request.getGuardianId() == null) {
             peopleRepository.save(convertor.convertToPerson(request,city,area));
             return;
         }
 
-        // prevent a guardian of a guardian
-        Optional<People> person = Optional.ofNullable(peopleRepository.findByEmail(request.getEmail()));
-        if (person.isPresent()) {
-            long id = person.get().getId();
-            List<People> potentialChildren = peopleRepository.findPeopleByGuardianId(id);
-            if (!potentialChildren.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT,"This person a guardian itself");
-            }
-        }
 
         People guardianToBe = peopleRepository.findById(request.getGuardianId())
-                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("no person with id %d",request.getGuardianId())));
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,String.format("no person with id %d exists as a guardian",request.getGuardianId())));
         // a guardian should be 18+ years old from now
         LocalDate now = LocalDate.now();
         long diff = dateFormat.difference(guardianToBe.getDateOfBirth(),now);
@@ -81,6 +90,7 @@ public class PeopleServiceImpl implements PeopleService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "The age should be greater then 18 ");
 
         }
+
         peopleRepository.save(convertor.convertToPerson(request,city,area));
 
 
