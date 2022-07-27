@@ -194,22 +194,23 @@ public class PeopleServiceImpl implements PeopleService {
 
         List<People> children = peopleRepository.findPeopleByGuardianId(fromGuardian.getId());
         Set<People> set = new HashSet<>(children);
-        List<Optional<People>> requestChildren = request.getChildrenIds().stream().map(i->peopleRepository.findById(i)).toList();
+        List<Optional<People>> requestChildren = request.getChildrenIds().stream()
+                .map(i->peopleRepository.findById(i)).toList();
 
         requestChildren.stream().filter(ch -> ch.isPresent() && set.add(ch.get())).forEach(ch -> {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
                     String.format("Person with id %d does not belong to this guardian", ch.get().getId()));
         });
 
-        //- verify, that `toGuardian` is not a child and does not have a guardian
+
         People toGuardian = peopleRepository.findById(request.getToGuardian())
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
                         String.format("No such guardian with id %d",request.getToGuardian())));
 
 
-
+        //- verify, that `toGuardian` is not a child and does not have a guardian
         //- on move, childrens’ city and area should be changed to guardians city and area
-       if (toGuardian.getGuardianId() == 0 || toGuardian.getGuardianId() == null) {
+       if (toGuardian.getGuardianId() == null) {
            children.forEach(person-> {
                People.builder()
                        .guardianId(toGuardian.getId())
@@ -274,7 +275,7 @@ public class PeopleServiceImpl implements PeopleService {
 
 
 
-        if (person.getGuardianId() == 0 || person.getGuardianId() == null) {
+        if (person.getGuardianId() == null) {
             //- on moving parent - all children get moved as well
             person.setCity(toCity);
             peopleRepository.save(person);
@@ -292,7 +293,8 @@ public class PeopleServiceImpl implements PeopleService {
 
 
         } else { // - person with a guardian cannot be moved - 422 UNPROCESSABLE_ENTITY + reason
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,"Person has a guardian and can not be moved");
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    String.format("Person has a guardian with id %d and can not be moved",person.getGuardianId()));
         }
 
 

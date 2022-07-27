@@ -1,6 +1,8 @@
 package com.example.coronaalarmapp.entity;
 
 
+import com.example.coronaalarmapp.entity.language.Language;
+import com.example.coronaalarmapp.entity.language.LanguageConvertor;
 import lombok.*;
 
 import javax.persistence.*;
@@ -37,6 +39,9 @@ public class People {
     @ManyToOne
     @JoinColumn(name = "city_id")
     private City city;
+    @Column(name = "language")
+    @Convert(converter = LanguageConvertor.class)
+    private Language language;
 
 
 

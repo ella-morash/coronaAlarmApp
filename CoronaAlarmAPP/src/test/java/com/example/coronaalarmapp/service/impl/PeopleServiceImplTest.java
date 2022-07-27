@@ -105,6 +105,40 @@ public class PeopleServiceImplTest {
         Assertions.assertEquals(expectedMessage, ex.getReason());
     }
 
+    @Test
+    @DisplayName("should throw CONFLICT,when request has a guardian and children at the same time")
+    void shouldThrowConflictWhenRequestHasGuardianAndChildren() {
+
+        PeopleDTORequest request = PeopleDTORequest.builder()
+                .email("djgf@.com")
+                .firstName("Alex")
+                .children(List.of(PeopleDTORequest.builder()
+                                .firstName("John")
+                                .build(),
+                        PeopleDTORequest.builder()
+                                .firstName("Julia")
+                                .build()))
+                .guardianId(1L)
+                .build();
+
+        Mockito
+                .when(peopleRepository.existsByEmail(request.getEmail()))
+                .thenReturn(Boolean.TRUE);
+
+        HttpStatus expectedStatus = HttpStatus.CONFLICT;
+        String expectedMessage = String.format("there is already an email %s", request.getEmail());
+
+
+        ResponseStatusException ex = Assertions.assertThrows(
+                ResponseStatusException.class,
+                () -> peopleService.createPerson(request)
+        );
+
+
+        Assertions.assertEquals(expectedStatus, ex.getStatus());
+        Assertions.assertEquals(expectedMessage, ex.getReason());
+    }
+
 
     }
 
