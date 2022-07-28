@@ -14,6 +14,7 @@ import com.example.coronaalarmapp.repository.PeopleRepository;
 import com.example.coronaalarmapp.service.PeopleService;
 import com.example.coronaalarmapp.util.Convertor;
 import com.example.coronaalarmapp.util.DateFormat;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,28 +23,27 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
+@AllArgsConstructor
+@Transactional
 public class PeopleServiceImpl implements PeopleService {
 
-    @Autowired
-    private PeopleRepository peopleRepository;
 
-    @Autowired
-    private CityRepository cityRepository;
+    private final PeopleRepository peopleRepository;
 
-    @Autowired
-    private AreaRepository areaRepository;
 
-    @Autowired
-    private Convertor convertor;
+    private final CityRepository cityRepository;
 
-    @Autowired
-    private DateFormat dateFormat;
+
+    private final AreaRepository areaRepository;
+
+
+    private final Convertor convertor;
+
+
+    private final DateFormat dateFormat;
 
     @Override
     @SneakyThrows
@@ -86,15 +86,23 @@ public class PeopleServiceImpl implements PeopleService {
             guardian = convertor.convertToPerson(request,city,area);
             var children = request.getChildren();
 
+            final List<People> listOfGuardians = new ArrayList<>();
+
             children.forEach(ch-> {
+
                 Optional<People> mayBeGuardian = Optional.ofNullable(peopleRepository.findByEmail(ch.getEmail()));
                 if (mayBeGuardian.isPresent()) {
                     var chi = peopleRepository.findPeopleByGuardianId(mayBeGuardian.get().getId());
                     if (!chi.isEmpty()) {
-                        throw new ResponseStatusException(HttpStatus.CONFLICT,String.format("Person %s is a guardian and can not be a child",ch.getFirstName()));
+                        listOfGuardians.add(mayBeGuardian.get());
                     }
                 }
             });
+
+            if (!listOfGuardians.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        String.format("These persons %s are already guardians",listOfGuardians));
+            }
 
 
 
@@ -294,7 +302,7 @@ public class PeopleServiceImpl implements PeopleService {
 
         } else { // - person with a guardian cannot be moved - 422 UNPROCESSABLE_ENTITY + reason
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
-                    String.format("Person has a guardian with id %d and can not be moved",person.getGuardianId()));
+                     String.format("Person has a guardian with id %d and can not be moved",person.getGuardianId()));
         }
 
 

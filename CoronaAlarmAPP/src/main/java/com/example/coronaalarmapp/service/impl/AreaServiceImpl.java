@@ -7,6 +7,7 @@ import com.example.coronaalarmapp.repository.AreaRepository;
 import com.example.coronaalarmapp.repository.CityRepository;
 import com.example.coronaalarmapp.service.AreaService;
 import com.example.coronaalarmapp.util.Convertor;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,14 +20,15 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class AreaServiceImpl implements AreaService {
 
-    @Autowired
-    private AreaRepository areaRepository;
-    @Autowired
-    private Convertor  convertor;
-    @Autowired
-    private CityRepository cityRepository;
+
+    private final AreaRepository areaRepository;
+
+    private final Convertor  convertor;
+
+    private final CityRepository cityRepository;
 
     @Override
     public void createArea(AreaDTO areaDTO) {

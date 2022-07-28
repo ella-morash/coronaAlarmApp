@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Configuration
 @EnableJpaAuditing
-public class MyConfiguration {
+public class AuditConfiguration {
     @Bean
     public AuditorAware<String> auditorAware() {
         return Optional::empty;

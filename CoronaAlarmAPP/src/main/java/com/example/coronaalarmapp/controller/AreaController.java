@@ -4,6 +4,7 @@ package com.example.coronaalarmapp.controller;
 import com.example.coronaalarmapp.dto.AreaDTO;
 import com.example.coronaalarmapp.entity.Area;
 import com.example.coronaalarmapp.service.AreaService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +13,11 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@AllArgsConstructor
 public class AreaController {
 
-    @Autowired
-    private AreaService areaService;
+
+    private final AreaService areaService;
 
     @PostMapping(path = "/api/areas")
     @ResponseStatus(HttpStatus.CREATED)

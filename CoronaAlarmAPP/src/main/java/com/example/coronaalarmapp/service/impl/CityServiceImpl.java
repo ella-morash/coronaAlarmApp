@@ -9,28 +9,32 @@ import com.example.coronaalarmapp.repository.CityRepository;
 import com.example.coronaalarmapp.repository.NotificationRepository;
 import com.example.coronaalarmapp.service.CityService;
 import com.example.coronaalarmapp.util.Convertor;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
+@Transactional
 public class CityServiceImpl implements CityService {
 
-    @Autowired
-    private CityRepository cityRepository;
 
-    @Autowired
-    private AreaRepository areaRepository;
+    private final CityRepository cityRepository;
 
-    @Autowired
-    private Convertor convertor;
 
-    @Autowired
-    private NotificationRepository notificationRepository;
+    private final AreaRepository areaRepository;
+
+
+    private final Convertor convertor;
+
+
+    private final NotificationRepository notificationRepository;
 
     @Override
     public void createCity(CityDTO cityDTO) {

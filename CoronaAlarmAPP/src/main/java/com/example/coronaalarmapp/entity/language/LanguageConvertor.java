@@ -10,11 +10,11 @@ import javax.persistence.Converter;
 public class LanguageConvertor implements AttributeConverter<Language,Integer> {
     @Override
     public Integer convertToDatabaseColumn(Language language) {
-        return language == null ? null : language.getLanguageId();
+        return  language.getLanguageId();
     }
 
     @Override
     public Language convertToEntityAttribute(Integer integer) {
-        return integer == null ? null : Language.findByLanguageId(integer);
+        return Language.findByLanguageId(integer);
     }
 }

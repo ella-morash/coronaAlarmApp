@@ -1,5 +1,6 @@
 package com.example.coronaalarmapp.dto;
 
+import com.example.coronaalarmapp.entity.language.Language;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,4 +24,5 @@ public class PeopleDTOResponse {
     private List<PeopleDTOResponse> children;
     private Long cityId;
     private Long areaId;
+    private Language language;
 }

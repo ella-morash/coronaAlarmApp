@@ -7,6 +7,7 @@ import com.example.coronaalarmapp.entity.People;
 import com.example.coronaalarmapp.entity.severitystatus.SeverityStatus;
 import com.example.coronaalarmapp.repository.*;
 import com.example.coronaalarmapp.service.NotificationService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,18 +20,20 @@ import java.util.Optional;
 
 
 @Service
+@AllArgsConstructor
+@Transactional
 public class NotificationServiceImpl implements NotificationService {
 
-    @Autowired
-    private NotificationRepository notificationRepository;
-    @Autowired
-    private NotificationPeopleRepository notificationPeopleRepository;
-    @Autowired
-    private PeopleRepository peopleRepository;
-    @Autowired
-    private AreaRepository areaRepository;
-    @Autowired
-    private CityRepository cityRepository;
+
+    private final NotificationRepository notificationRepository;
+
+    private final NotificationPeopleRepository notificationPeopleRepository;
+
+    private final PeopleRepository peopleRepository;
+
+    private final AreaRepository areaRepository;
+
+    private final CityRepository cityRepository;
 
     @Override
     @Transactional

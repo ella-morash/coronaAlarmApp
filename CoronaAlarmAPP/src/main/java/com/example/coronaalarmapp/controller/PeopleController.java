@@ -6,6 +6,7 @@ import com.example.coronaalarmapp.dto.MovePersonToCityRequestDTO;
 import com.example.coronaalarmapp.dto.PeopleDTORequest;
 import com.example.coronaalarmapp.dto.PeopleDTOResponse;
 import com.example.coronaalarmapp.service.PeopleService;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,10 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
+@AllArgsConstructor
 public class PeopleController {
 
-    @Autowired
-    private PeopleService peopleService;
+
+    private final PeopleService peopleService;
 
     @SneakyThrows
     @PostMapping(path = "/api/people")
