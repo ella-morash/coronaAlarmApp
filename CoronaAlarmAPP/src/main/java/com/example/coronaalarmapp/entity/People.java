@@ -2,12 +2,10 @@ package com.example.coronaalarmapp.entity;
 
 
 import com.example.coronaalarmapp.entity.language.Language;
-import com.example.coronaalarmapp.entity.language.LanguageConvertor;
+import com.example.coronaalarmapp.entity.language.LanguageConverter;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "people")
@@ -40,7 +38,7 @@ public class People {
     @JoinColumn(name = "city_id")
     private City city;
     @Column(name = "language")
-    @Convert(converter = LanguageConvertor.class)
+    @Convert(converter = LanguageConverter.class)
     private Language language;
 
 

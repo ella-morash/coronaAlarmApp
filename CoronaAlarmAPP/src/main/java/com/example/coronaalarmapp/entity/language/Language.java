@@ -12,32 +12,20 @@ import java.util.Arrays;
 @Getter
 public enum Language {
 
-    ENGLISH(1,"en"),
-    RUSSIAN(2,"ru"),
-    GERMAN(3,"de");
+    ENGLISH("en"),
+    RUSSIAN("ru"),
+    GERMAN("de");
 
-    private final Integer languageId;
-    private final String externalLanguageId;
+    private final String languageType;
 
 
-    public static Language findByLanguageId(Integer languageId) {
-        if (languageId == null) {
+    public static Language getByType(String type) {
+        if (type == null) {
             return null;
         }
 
         return Arrays.stream(Language.values())
-                .filter(x -> x.languageId.equals(languageId))
-                .findFirst()
-                .orElse(null);
-    }
-    @JsonCreator
-    public static Language findByExternalLanguageId( String externalLanguageId) {
-        if (externalLanguageId == null) {
-            return null;
-        }
-
-        return Arrays.stream(Language.values())
-                .filter(x -> x.externalLanguageId.equals(externalLanguageId))
+                .filter(langType -> langType.getLanguageType().equals(type))
                 .findFirst()
                 .orElse(null);
     }

@@ -13,7 +13,7 @@ public class I18nConfiguration {
     public MessageSource messageSource() {
         var messageSource = new ReloadableResourceBundleMessageSource();
 
-        messageSource.setBasename("classpath:greetings");
+        messageSource.setBasename("classpath:notifications");
         messageSource.setDefaultEncoding("UTF-8");
 
         messageSource.setUseCodeAsDefaultMessage(true);

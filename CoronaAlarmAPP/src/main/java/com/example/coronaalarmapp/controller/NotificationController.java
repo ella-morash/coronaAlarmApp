@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @AllArgsConstructor
 public class NotificationController {
@@ -19,8 +21,8 @@ public class NotificationController {
 
     @PostMapping(path = "/api/notifications/notify")//?area_code={areaCode}&severity={severity}
     @ResponseStatus(HttpStatus.CREATED)
-    public void notifyPeople(@RequestParam(name = "areaCode") String areaCode,
-                             @RequestParam(name = "severity") SeverityStatus severity) {
-        notificationService.notifyPeople(areaCode,severity);
+    public List<String> notifyPeople(@RequestParam(name = "areaCode") String areaCode,
+                                     @RequestParam(name = "severity") SeverityStatus severity) {
+        return notificationService.notifyPeople(areaCode,severity);
     }
 }
